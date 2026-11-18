@@ -22,7 +22,7 @@ def P(p,b):
  with urlopen(q)as r:return J.load(r)
 def sq(s):return ord(s[0])-97+(int(s[1])-1)*16
 def nm(x):return chr(97+(x&7))+str((x>>4)+1)
-def U(m):return nm(m&127)+nm(m>>7&127)+("q" if m>>14 else "")
+def U(m):return nm(m&127)+nm(m>>7&127)+("  nbrq"[m>>14]if m>>14 else "")
 def F(f):
  a=f.split();b=[0]*128;i=112
  for c in a[0]:
@@ -88,7 +88,7 @@ def D(b,f,t,pr,C,E,s):
  e=f+16*s if abs(p)==1 and abs(t-f)==32 else -1
  return n,c,e
 def S(b,s):
- w=0;wb=0;bb=0;eg=not any(abs(p)==5 for p in b);wf=[0]*8;bf=[0]*8;wp=[];bp=[]
+ w=0;wb=0;bb=0;eg=5 not in b and -5 not in b;wf=[0]*8;bf=[0]*8;wp=[];bp=[]
  for f,p in enumerate(b):
   if not p:continue
   a=abs(p)
@@ -104,14 +104,19 @@ def S(b,s):
   w+=v if p>0 else -v
  if wb>1:w+=30
  if bb>1:w-=30
+ bm=[0]*10;wm=[7]*10
+ for r,c in bp:
+  if r>bm[c+1]:bm[c+1]=r
+ for r,c in wp:
+  if r<wm[c+1]:wm[c+1]=r
  for r,c in wp:
   if wf[c]>1:w-=8
   if not (wf[c-1] if c else 0) and not (wf[c+1] if c<7 else 0):w-=10
-  if not any(br>r and abs(bc-c)<=1 for br,bc in bp):w+=12+3*r
+  if bm[c]<=r and bm[c+1]<=r and bm[c+2]<=r:w+=12+3*r
  for r,c in bp:
   if bf[c]>1:w+=8
   if not (bf[c-1] if c else 0) and not (bf[c+1] if c<7 else 0):w+=10
-  if not any(wr<r and abs(wc-c)<=1 for wr,wc in wp):w-=12+3*(7-r)
+  if wm[c]>=r and wm[c+1]>=r and wm[c+2]>=r:w-=12+3*(7-r)
  return w*s
 def O(b,m):
  f=m&127;t=m>>7&127;v=b[t]
@@ -127,6 +132,7 @@ def Q(b,s,C,E,al,be,pl):
  ms.sort(key=lambda m:-O(b,m))
  for m in ms:
   f=m&127;t=m>>7&127;pr=m>>14
+  if not pr and b[t] and st+V[abs(b[t])]+200<=al:continue
   n,c,ee=D(b,f,t,pr,C,E,s)
   if A(n,n.index(6*s),-s):continue
   sc=-Q(n,-s,c,ee,-be,-al,pl+1)
@@ -137,7 +143,7 @@ def AB(b,s,C,E,d,al,be,pl):
  N[0]+=1
  if N[0]%512<1 and Z.time()>W[0]:raise X
  tb=tuple(b);kr=(tb,s,C,E)
- if kr in PATH:return 0
+ if kr in PATH or HIS.get(kr,0)>1:return 0
  if d<=0:return Q(b,s,C,E,al,be,0)
  k=kr;e=T.get(k);oa=al;tm=e[3] if e else -1
  if e and e[0]>=d:
@@ -174,12 +180,6 @@ def R(b,s,C,E,legal,his):
   f=sq(u[:2]);t=sq(u[2:4]);pr=(5,4,3,2)["qrbn".find(u[4])] if len(u)>4 else 0
   ms.append(f|t<<7|pr<<14)
  ms.sort(key=lambda m:-O(b,m))
- keep=[]
- for m in ms:
-  f=m&127;t=m>>7&127;pr=m>>14
-  n,c,ee=D(b,f,t,pr,C,E,s)
-  if his.get((tuple(n),-s,c,ee),0)<2:keep.append(m)
- if keep:ms=keep
  bm=ms[0];T.clear();o=Z.time();W[0]=o+6
  for d in range(1,30):
   if Z.time()-o>1.2:break
